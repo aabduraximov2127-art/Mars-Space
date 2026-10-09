@@ -15,14 +15,14 @@ Holat belgilari: ✅ bajarildi va tekshirildi · 🟡 qisman · ⬜ boshlanmagan
 | Bosqich | Mazmun | Natija mezoni | Holat |
 |---|---|---|---|
 | Phase 0 | Audit, arxitektura, DB sxema, API kontrakt, dizayn, reja | `docs/*.md` | ✅ |
-| Phase 1 | Backend/frontend konfiguratsiya, custom User, PostgreSQL, env, JWT (cookie refresh), RBAC, birinchi migratsiyalar, bazaviy testlar | `migrate` ✓, auth testlari ✓, `npm run build` ✓ | ⬜ |
-| Phase 2 | Filiallar, xonalar, kurslar, guruhlar, a'zolik/ko'chirish, teacher/student boshqaruvi, dars jadvali (konflikt tekshiruvi, generatsiya), qidiruv/filter/pagination | API + permission testlari ✓, sahifalar ✓ | ⬜ |
-| Phase 3 | Davomat (+tarix, foiz), vazifalar, topshiriqlar (revision), baholash (+tarix), student progress | testlar ✓ | ⬜ |
-| Phase 4 | 4 ta rol dashboardi, real statistikalar, KPI formulalari | testlar ✓ | ⬜ |
-| Phase 5 | To'lovlar (invoice, payment, void, balans), bildirishnomalar, e'lonlar, coinlar, hisobotlar (CSV), chat (REST + polling) | testlar ✓ | ⬜ |
-| Phase 6 | UI polish: responsive, holatlar, accessibility, performance (lazy routes) | build ✓, vizual tekshiruv | ⬜ |
-| Phase 7 | Barcha testlar, permission audit, 12 ssenariy, regressiya, `check --deploy` | hammasi yashil | ⬜ |
-| Phase 8 | Docker, compose, Nginx, prod env, backup/restore, README | fayllar ✓ (Docker ⛔ — o'rnatilmagan) | ⬜ |
+| Phase 1 | Backend/frontend konfiguratsiya, custom User, PostgreSQL, env, JWT (cookie refresh), RBAC, birinchi migratsiyalar, bazaviy testlar | `migrate` ✓, auth testlari ✓, `npm run build` ✓ | ✅ |
+| Phase 2 | Filiallar, xonalar, kurslar, guruhlar, a'zolik/ko'chirish, teacher/student boshqaruvi, dars jadvali (konflikt tekshiruvi, generatsiya), qidiruv/filter/pagination | API + permission testlari ✓, sahifalar ✓ | ✅ |
+| Phase 3 | Davomat (+tarix, foiz), vazifalar, topshiriqlar (revision), baholash (+tarix), student progress | testlar ✓ | ✅ |
+| Phase 4 | 4 ta rol dashboardi, real statistikalar, KPI formulalari | testlar ✓ | ✅ |
+| Phase 5 | To'lovlar (invoice, payment, void, balans), bildirishnomalar, e'lonlar, coinlar, hisobotlar (CSV), chat (REST + polling) | testlar ✓ | ✅ |
+| Phase 6 | UI polish: responsive, holatlar, accessibility, performance (lazy routes) | build ✓, vizual tekshiruv | ✅ |
+| Phase 7 | Barcha testlar, permission audit, 12 ssenariy, regressiya, `check --deploy` | hammasi yashil | ✅ |
+| Phase 8 | Docker, compose, Nginx, prod env, backup/restore, README | fayllar ✓ (Docker ⛔ — o'rnatilmagan) | 🟡 |
 
 ## Majburiy ssenariylar (Phase 7, `backend/tests/test_scenarios.py` + Playwright smoke)
 1. Superadmin yangi admin yaratadi · 2. Admin student va ustoz yaratadi · 3. Student guruhga biriktiriladi ·
@@ -35,4 +35,15 @@ O'zgargan fayllarni ko'rib chiqish → `ruff check` + `tsc --noEmit` + `eslint` 
 ushbu jadvalni yangilash → qolgan muammolarni "Ma'lum muammolar" bo'limiga yozish.
 
 ## Ma'lum muammolar / qoldiqlar
-(bosqichlar davomida to'ldiriladi)
+Holat 2026-10-09: backend 92 ta test (12 ssenariy + permission audit) yashil, `ruff`, `spectacular --validate`,
+`tsc`, `eslint`, `vite build` toza. Asosiy oqimlar (davomat, topshirish, baholash, to'lov, yozilish, chat) headless
+Chrome'da qo'lda yozilgan Playwright skripti bilan sinaldi — skript hali repoga test sifatida qo'shilmagan.
+
+* Docker Compose stack shu kompyuterda sinalmagan (Docker o'rnatilmagan) — Phase 8 🟡.
+* `GET /api/users/{id}/study-history/` va `teaching-overview/` alohida endpoint sifatida yozilmagan; foydalanuvchi
+  sahifasi bu ma'lumotlarni mavjud endpointlardan (memberships, balances, attendance/summary, grades/summary) yig'adi.
+* Chat — REST + 5 s polling; Django Channels keyingi bosqichda.
+* Frontend yo'llari rol bo'yicha prefikssiz (`/groups`, `/payments`): navigatsiya va ruxsat rolga qarab beriladi,
+  bildirishnoma havolalari shu yo'llarga ishora qiladi (ARCHITECTURE §11 dagi `/admin/*` daraxtlari o'rniga).
+* Frontend unit testlari (Vitest) hali yozilmagan; sozlama tayyor (`src/test/setup.ts`).
+* Email yuborish SMTP sozlanmaguncha konsolga chiqadi (parolni tiklash xati).
