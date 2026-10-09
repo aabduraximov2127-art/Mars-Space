@@ -105,3 +105,20 @@
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Printing a payment receipt prints only the receipt. */
+@media print {
+  body:has(#receipt) * {
+    visibility: hidden;
+  }
+  #receipt,
+  #receipt * {
+    visibility: visible;
+  }
+  #receipt {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: 0;
+  }
+}

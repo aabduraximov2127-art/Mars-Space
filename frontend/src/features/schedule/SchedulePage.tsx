@@ -336,7 +336,7 @@ export default function SchedulePage() {
                         </p>
                         <p className="mt-0.5 text-[13px] leading-snug font-medium text-ink-900">{l.group_name}</p>
                         <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-ink-500">
-                          {me.role === "teacher" ? <MapPin className="size-3" aria-hidden /> : <UserIcon className="size-3" aria-hidden />}
+                          {me.role === "teacher" ? <MapPin className="size-3 shrink-0" aria-hidden /> : <UserIcon className="size-3 shrink-0" aria-hidden />}
                           {me.role === "teacher" ? l.room_name ?? "—" : l.teacher_name}
                         </p>
                         {l.attendance_marked && <p className="mt-1 text-[11px] font-medium text-success">✓ Davomat</p>}
