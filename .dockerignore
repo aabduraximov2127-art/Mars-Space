@@ -1,0 +1,14 @@
+# Context for deploy/frontend.Dockerfile (repository root)
+.git
+.devdb
+backups
+**/node_modules
+**/.venv
+**/__pycache__
+backend
+frontend/dist
+frontend/coverage
+frontend/test-results
+frontend/playwright-report
+**/.env
+**/.env.*

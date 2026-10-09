@@ -1,0 +1,65 @@
+# EduCentr production-like stack:  cp .env.example .env  (edit secrets)  &&  docker compose up -d --build
+# NOTE: written for Docker Compose v2; not executed on the development machine (Docker not installed there).
+name: educentr
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-educentr}
+      POSTGRES_USER: ${POSTGRES_USER:-educentr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-educentr}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-educentr}
+      REDIS_URL: redis://redis:6379/0
+      MEDIA_ROOT: /app/media
+      PRIVATE_MEDIA_ROOT: /app/private_media
+    volumes:
+      - media:/app/media
+      - private_media:/app/private_media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/frontend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - media:/srv/media:ro
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  media:
+  private_media:

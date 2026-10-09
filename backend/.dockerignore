@@ -1,0 +1,15 @@
+.venv
+.env
+.env.*
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+media
+private_media
+staticfiles
+*/tests/
+conftest.py
+requirements-dev.*

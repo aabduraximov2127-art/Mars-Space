@@ -1,0 +1,32 @@
+# Example host-level TLS terminator (Nginx on the server, in front of the compose stack).
+# 1) Obtain certificates, e.g.:  certbot certonly --webroot -w /var/www/certbot -d edu.example.uz
+# 2) Run the compose stack with HTTP_PORT=8080 (so it does not take port 80).
+# 3) Put this file into /etc/nginx/conf.d/ on the host and reload Nginx.
+
+server {
+    listen 80;
+    server_name edu.example.uz;
+    location /.well-known/acme-challenge/ { root /var/www/certbot; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name edu.example.uz;
+
+    ssl_certificate     /etc/letsencrypt/live/edu.example.uz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/edu.example.uz/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    client_max_body_size 60m;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}

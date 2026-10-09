@@ -1,0 +1,44 @@
+[project]
+name = "educentr-backend"
+version = "1.0.0"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.test_settings"
+python_files = ["tests.py", "test_*.py"]
+testpaths = ["."]
+norecursedirs = [".venv", "media", "private_media", "staticfiles", "node_modules"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning:rest_framework_simplejwt.*",
+    "ignore:No directory at:UserWarning",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*/migrations/*", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ", "S"]
+ignore = [
+    "S101",  # assert is fine in tests
+    "S105",  # false positives on constants such as "password_reset"
+    "S106",
+    "DJ001",  # blank CharFields intentionally default to ""
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S", "B"]
+"**/test_*.py" = ["S", "B"]
+"conftest.py" = ["S"]
+"config/test_settings.py" = ["F403", "F405", "S108"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "config", "core", "accounts", "organizations", "courses", "groups", "schedules", "attendance",
+    "assignments", "grades", "payments", "notifications", "announcements", "chat", "rewards", "reports", "audit",
+]
+
+[tool.coverage.run]
+omit = ["*/migrations/*", "*/tests/*", "config/*", "manage.py", ".venv/*"]
