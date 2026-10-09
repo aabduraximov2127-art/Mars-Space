@@ -11,7 +11,8 @@
     "moduleDetection": "force",
     "noEmit": true,
     "strict": true,
-    "types": ["node", "vitest/config"]
+    "types": ["node", "vitest/config"],
+    "noUnusedLocals": true
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "playwright.config.ts", "e2e"]
 }
