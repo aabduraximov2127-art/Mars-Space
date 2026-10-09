@@ -8,6 +8,7 @@ import { Badge, Card, EmptyState, ErrorState, PageHeader, Skeleton } from "@/com
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ConfirmDialog, Modal } from "@/components/ui/Modal";
 import { Pagination } from "@/components/ui/Table";
+import { DateTimeInput } from "@/components/ui/dates";
 import { del, fieldMessage, parseApiError, patch, post } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
 import { dateTime, fromLocalInput, relative, ROLE_LABELS, toLocalInput } from "@/lib/format";
@@ -124,7 +125,7 @@ function AnnouncementForm({ item, onClose }: { item?: Announcement | null; onClo
           </div>
         </div>
         <Field label="Amal qilish muddati" error={errors.expires_at}>
-          {(p) => <Input {...p} type="datetime-local" value={form.expires_at} onChange={(e) => setForm({ ...form, expires_at: e.target.value })} />}
+          {(p) => <DateTimeInput {...p} value={form.expires_at} onChange={(v) => setForm({ ...form, expires_at: v })} />}
         </Field>
         <Field label="Holat">
           {(p) => (

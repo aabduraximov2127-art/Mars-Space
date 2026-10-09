@@ -1,9 +1,10 @@
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
+import { DateInput } from "@/components/ui/dates";
 import { patch, post } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { WEEKDAYS_SHORT } from "@/lib/format";
@@ -188,10 +189,23 @@ export function GroupForm({ group, onClose, onSaved }: { group?: Group | null; o
           {(p) => <Input {...p} type="number" min={1} max={500} {...register("capacity", { required: true })} />}
         </Field>
         <Field label="Boshlanish sanasi" error={errors.start_date?.message} required>
-          {(p) => <Input {...p} type="date" {...register("start_date", { required: "Sana majburiy." })} />}
+          {(p) => (
+            <Controller
+              control={control}
+              name="start_date"
+              rules={{ required: "Sana majburiy." }}
+              render={({ field }) => <DateInput {...p} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />}
+            />
+          )}
         </Field>
         <Field label="Tugash sanasi" error={errors.end_date?.message}>
-          {(p) => <Input {...p} type="date" {...register("end_date")} />}
+          {(p) => (
+            <Controller
+              control={control}
+              name="end_date"
+              render={({ field }) => <DateInput {...p} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />}
+            />
+          )}
         </Field>
         <div className="sm:col-span-2">
           <p className="mb-1.5 text-[13px] font-medium text-ink-700">Dars kunlari</p>

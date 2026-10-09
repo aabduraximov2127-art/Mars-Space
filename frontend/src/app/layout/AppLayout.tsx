@@ -30,9 +30,9 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <span className="block truncate text-xs text-ink-500">{me.branch_name ?? "Barcha filiallar"}</span>
         </span>
       </Link>
-      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Asosiy navigatsiya">
+      <nav className="flex-1 overflow-y-auto px-3 py-3" aria-label="Asosiy navigatsiya">
         {NAV[me.role].map((section, i) => (
-          <div key={i} className="mb-4">
+          <div key={i} className="mb-3">
             {section.title && (
               <p className="mb-1 px-3 text-[11px] font-semibold tracking-wider text-ink-400 uppercase">{section.title}</p>
             )}
@@ -45,7 +45,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                     onClick={onNavigate}
                     className={({ isActive }) =>
                       cn(
-                        "relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                        "relative flex items-center gap-3 rounded-md px-3 py-[7px] text-sm font-medium transition-colors",
                         isActive
                           ? "bg-brand-50 text-brand-700 before:absolute before:top-1.5 before:bottom-1.5 before:-left-3 before:w-[3px] before:rounded-r before:bg-brand-600"
                           : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
@@ -244,6 +244,17 @@ function ProfileMenu() {
   );
 }
 
+/** Current section name, shown in the header on small screens (the sidebar is hidden there). */
+function PageTitle() {
+  const me = useMe();
+  const { pathname } = useLocation();
+  const items = NAV[me.role].flatMap((s) => s.items);
+  const match = items
+    .filter((i) => (i.to === "/" ? pathname === "/" : pathname === i.to || pathname.startsWith(`${i.to}/`)))
+    .sort((a, b) => b.to.length - a.to.length)[0];
+  return <p className="min-w-0 flex-1 truncate font-semibold text-ink-900 lg:invisible">{match?.label ?? ""}</p>;
+}
+
 export function AppLayout() {
   const [drawer, setDrawer] = useState(false);
   const location = useLocation();
@@ -292,7 +303,7 @@ export function AppLayout() {
           >
             <Menu className="size-5" />
           </button>
-          <div className="flex-1" />
+          <PageTitle />
           <div className="flex items-center gap-1 sm:gap-2">
             <NotificationsBell />
             <ProfileMenu />

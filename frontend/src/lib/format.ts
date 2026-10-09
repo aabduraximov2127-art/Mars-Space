@@ -1,9 +1,11 @@
 import type { Role } from "./types";
 
-const group3 = (digits: string) => digits.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+/** Thousands are separated by non-breaking spaces so amounts never wrap across lines. */
+const NBSP = "\u00a0";
+const group3 = (digits: string) => digits.replace(/\B(?=(\d{3})+(?!\d))/g, NBSP);
 
 /** "1250000.00" -> "1 250 000 so'm". Money is never computed on the client, only formatted. */
-export function money(value: string | number | null | undefined, suffix = " so'm"): string {
+export function money(value: string | number | null | undefined, suffix = `${NBSP}so'm`): string {
   if (value === null || value === undefined || value === "") return "—";
   const str = typeof value === "number" ? value.toFixed(2) : String(value);
   const negative = str.startsWith("-");

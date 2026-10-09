@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
+import { DateInput } from "@/components/ui/dates";
 import { fieldMessage, parseApiError, post } from "@/lib/api";
 import { today } from "@/lib/format";
 import { useInvalidate, useOptions } from "@/lib/hooks";
@@ -114,7 +115,7 @@ export function EnrollModal({ student, group, onClose }: { student?: User; group
           </>
         )}
         <Field label="Qo'shilish sanasi" error={errors.joined_at} required>
-          {(p) => <Input {...p} type="date" value={joinedAt} onChange={(e) => setJoinedAt(e.target.value)} />}
+          {(p) => <DateInput {...p} value={joinedAt} onChange={(v) => setJoinedAt(v)} />}
         </Field>
         <Field label="Chegirma turi" error={errors.discount_type}>
           {(p) => (

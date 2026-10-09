@@ -4,8 +4,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { Badge, Card, EmptyState, PageHeader, rateTone, StatCard } from "@/components/ui/display";
-import { Input, Select } from "@/components/ui/form";
+import { Select } from "@/components/ui/form";
 import { DataTable, FilterBar, Pagination, Tabs } from "@/components/ui/Table";
+import { DateInput } from "@/components/ui/dates";
 import { get } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { addDays, date, percent, time, today } from "@/lib/format";
@@ -48,8 +49,8 @@ function RecordsTable({ showStudent }: { showStudent: boolean }) {
               </option>
             ))}
           </Select>
-          <Input type="date" className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(e) => list.setFilter("date_from", e.target.value)} />
-          <Input type="date" className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(e) => list.setFilter("date_to", e.target.value)} />
+          <DateInput className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(v) => list.setFilter("date_from", v)} />
+          <DateInput className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(v) => list.setFilter("date_to", v)} />
         </FilterBar>
         <DataTable
           rows={list.rows}

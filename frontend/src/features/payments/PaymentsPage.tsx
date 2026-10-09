@@ -4,9 +4,10 @@ import { useState } from "react";
 
 import { Button, IconButton } from "@/components/ui/Button";
 import { Badge, Card, CardHeader, EmptyState, PageHeader, StatCard } from "@/components/ui/display";
-import { Field, Input, SearchInput, Select } from "@/components/ui/form";
+import { Field, SearchInput, Select } from "@/components/ui/form";
 import { ConfirmDialog, Modal } from "@/components/ui/Modal";
 import { DataTable, FilterBar, Pagination, Tabs } from "@/components/ui/Table";
+import { DateInput, MonthSelect } from "@/components/ui/dates";
 import { get, post } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
 import { date, dateTime, money, monthLabel, today } from "@/lib/format";
@@ -49,8 +50,8 @@ function PaymentsTable() {
               </option>
             ))}
           </Select>
-          <Input type="date" className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(e) => list.setFilter("date_from", e.target.value)} />
-          <Input type="date" className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(e) => list.setFilter("date_to", e.target.value)} />
+          <DateInput className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(v) => list.setFilter("date_from", v)} />
+          <DateInput className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(v) => list.setFilter("date_to", v)} />
         </FilterBar>
       )}
       <DataTable
@@ -61,7 +62,7 @@ function PaymentsTable() {
         rowKey={(r) => r.id}
         empty={<EmptyState icon={Wallet} title="To'lovlar topilmadi" />}
         columns={[
-          { key: "no", header: "Chek", cell: (r) => <span className="tabular font-mono text-[13px]">№{r.receipt_number}</span> },
+          { key: "no", header: "Chek", cell: (r) => <span className="tabular text-[13px] whitespace-nowrap text-ink-600">№ {r.receipt_number}</span> },
           { key: "date", header: "Sana", cell: (r) => <span className="whitespace-nowrap">{dateTime(r.paid_at)}</span> },
           ...(staff ? [{ key: "student", header: "Student", cell: (r: Payment) => <span className="font-medium text-ink-900">{r.student_name}</span> }] : []),
           { key: "group", header: "Guruh", cell: (r) => r.group_name },
@@ -159,7 +160,7 @@ function InvoicesTable() {
       {staff && (
         <FilterBar>
           <SearchInput value={String(list.filters.search ?? "")} onChange={(v) => list.setFilter("search", v)} placeholder="Student" />
-          <Input type="month" className="sm:w-44" aria-label="Davr" value={String(list.filters.period ?? "")} onChange={(e) => list.setFilter("period", e.target.value)} />
+          <MonthSelect className="sm:w-44" aria-label="Davr" emptyLabel="Barcha davrlar" value={String(list.filters.period ?? "")} onChange={(v) => list.setFilter("period", v)} />
           <Select className="sm:w-48" aria-label="Guruh" value={String(list.filters.group ?? "")} onChange={(e) => list.setFilter("group", e.target.value)}>
             <option value="">Barcha guruhlar</option>
             {groups.data?.map((g) => (
@@ -231,7 +232,7 @@ function InvoicesTable() {
       >
         <div className="space-y-4">
           <Field label="Oy" required>
-            {(p) => <Input {...p} type="month" value={period} onChange={(e) => setPeriod(e.target.value)} />}
+            {(p) => <MonthSelect {...p} value={period} onChange={(v) => setPeriod(v)} />}
           </Field>
           <Field label="Guruh" hint="Bo'sh — barcha guruhlar">
             {(p) => (

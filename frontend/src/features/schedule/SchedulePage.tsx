@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge, Card, DescriptionList, ErrorState, PageHeader, Skeleton } from "@/components/ui/display";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { ConfirmDialog, Modal } from "@/components/ui/Modal";
+import { DateInput } from "@/components/ui/dates";
 import { get, parseApiError, patch, post } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
 import { addDays, date, startOfWeek, time, today, WEEKDAYS } from "@/lib/format";
@@ -94,7 +95,7 @@ function LessonCreateModal({ onClose, defaultDate }: { onClose: () => void; defa
           )}
         </Field>
         <Field label="Sana" required>
-          {(p) => <Input {...p} type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />}
+          {(p) => <DateInput {...p} value={form.date} onChange={(v) => setForm({ ...form, date: v })} />}
         </Field>
         <Field label="Xona">
           {(p) => (

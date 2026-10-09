@@ -6,8 +6,9 @@ import { toast } from "sonner";
 import { BarSeries, compactMoney } from "@/components/charts";
 import { Button } from "@/components/ui/Button";
 import { Badge, Card, CardHeader, EmptyState, ErrorState, PageHeader, ProgressBar, rateTone, Skeleton, StatCard } from "@/components/ui/display";
-import { Input, Select } from "@/components/ui/form";
+import { Select } from "@/components/ui/form";
 import { DataTable, Tabs } from "@/components/ui/Table";
+import { DateInput } from "@/components/ui/dates";
 import { downloadFile, get, parseApiError } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
 import { addDays, money, MONTHS, num, percent, phone, today } from "@/lib/format";
@@ -67,7 +68,7 @@ function FinanceReport({ filters }: { filters: Filters }) {
         <StatCard label="Jami hisoblangan" value={money(d?.debt.total_charged)} loading={q.isLoading} />
         <StatCard label="Jami to'langan" value={money(d?.debt.total_paid)} loading={q.isLoading} />
       </div>
-      <div className="mb-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+      <div className="mb-6 grid items-start gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card>
           <CardHeader
             title="Tushum oylar bo'yicha"
@@ -125,7 +126,7 @@ function FinanceReport({ filters }: { filters: Filters }) {
           />
         </Card>
       </div>
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader title="Kurslar kesimida" />
           <DataTable
@@ -273,11 +274,11 @@ export default function ReportsPage() {
       <Card className="mb-4 flex flex-wrap items-end gap-3 p-4">
         <label className="space-y-1 text-[13px] font-medium text-ink-600">
           <span>Dan</span>
-          <Input type="date" value={filters.date_from} onChange={(e) => setFilters({ ...filters, date_from: e.target.value })} />
+          <DateInput value={filters.date_from} onChange={(v) => setFilters({ ...filters, date_from: v })} />
         </label>
         <label className="space-y-1 text-[13px] font-medium text-ink-600">
           <span>Gacha</span>
-          <Input type="date" value={filters.date_to} onChange={(e) => setFilters({ ...filters, date_to: e.target.value })} />
+          <DateInput value={filters.date_to} onChange={(v) => setFilters({ ...filters, date_to: v })} />
         </label>
         {me.role === "superadmin" && (
           <label className="space-y-1 text-[13px] font-medium text-ink-600">

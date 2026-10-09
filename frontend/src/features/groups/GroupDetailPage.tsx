@@ -17,9 +17,10 @@ import {
   Skeleton,
   Spinner,
 } from "@/components/ui/display";
-import { Checkbox, Field, Input, Select } from "@/components/ui/form";
+import { Checkbox, Field, Select } from "@/components/ui/form";
 import { ConfirmDialog, Modal } from "@/components/ui/Modal";
 import { DataTable, Tabs } from "@/components/ui/Table";
+import { DateInput } from "@/components/ui/dates";
 import { get, parseApiError, post } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
 import { addDays, date, daysOfWeek, money, percent, phone, time, today } from "@/lib/format";
@@ -104,7 +105,7 @@ function MembershipActions({ m, group }: { m: Membership; group: Group }) {
         }
       >
         <Field label="Chiqish sanasi" required>
-          {(p) => <Input {...p} type="date" value={leftAt} onChange={(e) => setLeftAt(e.target.value)} />}
+          {(p) => <DateInput {...p} value={leftAt} onChange={(v) => setLeftAt(v)} />}
         </Field>
       </Modal>
       <Modal
@@ -144,7 +145,7 @@ function MembershipActions({ m, group }: { m: Membership; group: Group }) {
             )}
           </Field>
           <Field label="Ko'chirish sanasi" required>
-            {(p) => <Input {...p} type="date" value={leftAt} onChange={(e) => setLeftAt(e.target.value)} />}
+            {(p) => <DateInput {...p} value={leftAt} onChange={(v) => setLeftAt(v)} />}
           </Field>
         </div>
       </Modal>
@@ -245,9 +246,9 @@ function LessonsTab({ group }: { group: Group }) {
         title="Darslar"
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Input type="date" aria-label="Boshlanish" className="h-8 w-40" value={range.from} onChange={(e) => setRange({ ...range, from: e.target.value })} />
+            <DateInput aria-label="Boshlanish" className="h-8 w-40" value={range.from} onChange={(v) => setRange({ ...range, from: v })} />
             <span className="text-ink-400">—</span>
-            <Input type="date" aria-label="Tugash" className="h-8 w-40" value={range.to} onChange={(e) => setRange({ ...range, to: e.target.value })} />
+            <DateInput aria-label="Tugash" className="h-8 w-40" value={range.to} onChange={(v) => setRange({ ...range, to: v })} />
           </div>
         }
       />
@@ -342,9 +343,9 @@ function AttendanceTab({ group }: { group: Group }) {
         description="+ keldi · K kechikdi · U uzrli · − kelmadi"
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Input type="date" aria-label="Boshlanish" className="h-8 w-40" value={range.from} onChange={(e) => setRange({ ...range, from: e.target.value })} />
+            <DateInput aria-label="Boshlanish" className="h-8 w-40" value={range.from} onChange={(v) => setRange({ ...range, from: v })} />
             <span className="text-ink-400">—</span>
-            <Input type="date" aria-label="Tugash" className="h-8 w-40" value={range.to} onChange={(e) => setRange({ ...range, to: e.target.value })} />
+            <DateInput aria-label="Tugash" className="h-8 w-40" value={range.to} onChange={(v) => setRange({ ...range, to: v })} />
           </div>
         }
       />
@@ -551,10 +552,10 @@ function GenerateLessonsModal({ group, onClose }: { group: Group; onClose: () =>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Boshlanish" required>
-            {(p) => <Input {...p} type="date" value={from} onChange={(e) => setFrom(e.target.value)} />}
+            {(p) => <DateInput {...p} value={from} onChange={(v) => setFrom(v)} />}
           </Field>
           <Field label="Tugash" required>
-            {(p) => <Input {...p} type="date" value={to} onChange={(e) => setTo(e.target.value)} />}
+            {(p) => <DateInput {...p} value={to} onChange={(v) => setTo(v)} />}
           </Field>
           <p className="text-[13px] text-ink-500 sm:col-span-2">
             Mavjud darslar va ustoz/xona to'qnashuvi bo'lgan kunlar avtomatik o'tkazib yuboriladi.

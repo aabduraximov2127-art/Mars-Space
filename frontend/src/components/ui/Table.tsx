@@ -37,7 +37,7 @@ export function DataTable<T>({
   if (error) return <ErrorState error={error} onRetry={onRetry} />;
   return (
     <div className={cn("overflow-x-auto", className)}>
-      <table className="w-full min-w-[640px] border-collapse text-left">
+      <table className="w-full min-w-max border-collapse text-left">
         <thead className="sticky top-0 z-10 bg-ink-50/80 backdrop-blur">
           <tr className="border-b border-line">
             {columns.map((c) => (

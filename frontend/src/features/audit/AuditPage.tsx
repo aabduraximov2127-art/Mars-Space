@@ -2,9 +2,10 @@ import { ScrollText } from "lucide-react";
 import { useState } from "react";
 
 import { Badge, Card, DescriptionList, EmptyState, PageHeader } from "@/components/ui/display";
-import { Input, SearchInput, Select } from "@/components/ui/form";
+import { SearchInput, Select } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
 import { DataTable, FilterBar, Pagination } from "@/components/ui/Table";
+import { DateInput } from "@/components/ui/dates";
 import { dateTime } from "@/lib/format";
 import { useOptions, usePagedList } from "@/lib/hooks";
 import { AUDIT_ACTION, ROLE, label, tone } from "@/lib/labels";
@@ -36,8 +37,8 @@ export default function AuditPage() {
               </option>
             ))}
           </Select>
-          <Input type="date" className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(e) => list.setFilter("date_from", e.target.value)} />
-          <Input type="date" className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(e) => list.setFilter("date_to", e.target.value)} />
+          <DateInput className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(v) => list.setFilter("date_from", v)} />
+          <DateInput className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(v) => list.setFilter("date_to", v)} />
         </FilterBar>
         <DataTable
           rows={list.rows}

@@ -1,11 +1,12 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
+import { DateInput } from "@/components/ui/dates";
 import { patch, post } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/format";
@@ -62,6 +63,7 @@ export function UserForm({ role, user, onClose }: { role: Role; user?: User | nu
   const p = user?.profile;
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
@@ -169,7 +171,13 @@ export function UserForm({ role, user, onClose }: { role: Role; user?: User | nu
         {role === "student" && (
           <>
             <Field label="Tug'ilgan sana" error={errors.birth_date?.message}>
-              {(f) => <Input {...f} type="date" {...register("birth_date")} />}
+              {(f) => (
+                <Controller
+                  control={control}
+                  name="birth_date"
+                  render={({ field }) => <DateInput {...f} value={field.value} onChange={field.onChange} onBlur={field.onBlur} />}
+                />
+              )}
             </Field>
             <Field label="Ota-ona ismi" error={errors.parent_name?.message}>
               {(f) => <Input {...f} {...register("parent_name")} />}

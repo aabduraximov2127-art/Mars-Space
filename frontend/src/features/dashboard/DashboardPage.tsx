@@ -31,8 +31,9 @@ import {
   Skeleton,
   StatCard,
 } from "@/components/ui/display";
-import { Input, Select } from "@/components/ui/form";
+import { Select } from "@/components/ui/form";
 import { DataTable } from "@/components/ui/Table";
+import { DateInput } from "@/components/ui/dates";
 import { get } from "@/lib/api";
 import { useMe } from "@/lib/auth";
 import { date, daysOfWeek, money, MONTHS, num, percent, relative, time, today } from "@/lib/format";
@@ -113,11 +114,11 @@ function StaffDashboard() {
       <Card className="mb-6 flex flex-wrap items-end gap-3 p-4">
         <label className="space-y-1 text-[13px] font-medium text-ink-600">
           <span>Davr boshi</span>
-          <Input type="date" value={filters.date_from} max={filters.date_to} onChange={(e) => setFilters({ ...filters, date_from: e.target.value })} />
+          <DateInput value={filters.date_from} max={filters.date_to} onChange={(v) => setFilters({ ...filters, date_from: v })} />
         </label>
         <label className="space-y-1 text-[13px] font-medium text-ink-600">
           <span>Davr oxiri</span>
-          <Input type="date" value={filters.date_to} min={filters.date_from} onChange={(e) => setFilters({ ...filters, date_to: e.target.value })} />
+          <DateInput value={filters.date_to} min={filters.date_from} onChange={(v) => setFilters({ ...filters, date_to: v })} />
         </label>
         {me.role === "superadmin" && (
           <label className="space-y-1 text-[13px] font-medium text-ink-600">
@@ -159,7 +160,7 @@ function StaffDashboard() {
             <StatCard label="Kurslar" value={num(k?.courses)} icon={BookOpen} tone="brand" loading={q.isLoading} />
           </KpiGrid>
 
-          <div className="mb-6 grid gap-6 xl:grid-cols-2">
+          <div className="mb-6 grid items-start gap-6 xl:grid-cols-2">
             <Card>
               <CardHeader title="Kunlik tushum" description="Tanlangan davr, so'm" />
               <div className="p-4">
@@ -238,7 +239,7 @@ function StaffDashboard() {
             </Card>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+          <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_1fr]">
             {d?.branches ? (
               <Card>
                 <CardHeader title="Filiallar kesimida" />
@@ -392,7 +393,7 @@ function TeacherDashboard() {
         <StatCard label="Tekshirilmagan ishlar" value={num(d?.kpis.pending_reviews)} icon={FileText} tone="warning" loading={q.isLoading} />
         <StatCard label="Davomat (30 kun)" value={percent(d?.kpis.attendance_rate_30d)} icon={Percent} tone={rateTone(d?.kpis.attendance_rate_30d)} loading={q.isLoading} hint={d && `${d.kpis.groups} guruh · ${d.kpis.students} student`} />
       </KpiGrid>
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader title="Bugungi darslar" />
           {q.isLoading ? <Skeleton className="m-5 h-24" /> : <LessonList lessons={d?.today_lessons ?? []} empty="Bugun dars yo'q" markLink />}
@@ -500,7 +501,7 @@ function StudentDashboard() {
         <StatCard label="O'rtacha baho" value={percent(d?.kpis.average_percent)} icon={Star} tone="success" loading={q.isLoading} />
         <StatCard label="Coinlar" value={num(d?.kpis.coins)} icon={Coins} tone="warning" loading={q.isLoading} />
       </KpiGrid>
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 xl:grid-cols-2">
         <Card>
           <CardHeader title="Yaqin darslar" actions={<Link to="/schedule" className="text-[13px] font-medium text-brand-700 hover:underline">Jadval</Link>} />
           {q.isLoading ? <Skeleton className="m-5 h-24" /> : <LessonList lessons={d?.upcoming_lessons ?? []} empty="Yaqin darslar yo'q" />}

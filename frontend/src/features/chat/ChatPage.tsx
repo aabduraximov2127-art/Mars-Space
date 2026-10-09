@@ -265,8 +265,8 @@ export default function ChatPage() {
   return (
     <div>
       <h1 className="sr-only">Chat</h1>
-      <Card className="grid h-[calc(100dvh-8.5rem)] min-h-[420px] overflow-hidden md:grid-cols-[320px_1fr]">
-        <aside className={cn("flex min-h-0 flex-col border-r border-line", selected && "hidden md:flex")}>
+      <Card className="grid h-[calc(100dvh-8.5rem)] min-h-[420px] grid-cols-1 overflow-hidden md:grid-cols-[320px_1fr]">
+        <aside className={cn("flex min-h-0 min-w-0 flex-col border-line md:border-r", selected && "hidden md:flex")}>
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <p className="font-semibold text-ink-900">Suhbatlar</p>
             <IconButton label="Yangi suhbat" onClick={() => setCreating(true)}>
@@ -329,7 +329,7 @@ export default function ChatPage() {
             ))}
           </ul>
         </aside>
-        <section className={cn("min-h-0", !selected && "hidden md:block")}>
+        <section className={cn("min-h-0 min-w-0", !selected && "hidden md:block")}>
           {selected ? (
             <Conversation key={selected.id} room={selected} onBack={() => select(null)} />
           ) : (

@@ -1,13 +1,20 @@
 import { addDays, date, daysOfWeek, initials, money, monthLabel, percent, phone, startOfWeek, time } from "./format";
 
+// Amounts use non-breaking spaces; normalise them so the expectations stay readable.
+const NBSP = String.fromCharCode(160);
+const sp = (s: string) => s.split(NBSP).join(" ");
+
 describe("money", () => {
   it("groups thousands with spaces and drops zero cents", () => {
-    expect(money("1250000.00")).toBe("1 250 000 so'm");
-    expect(money(650000)).toBe("650 000 so'm");
+    expect(sp(money("1250000.00"))).toBe("1 250 000 so'm");
+    expect(sp(money(650000))).toBe("650 000 so'm");
   });
   it("keeps non-zero cents and the sign", () => {
-    expect(money("283333.33")).toBe("283 333,33 so'm");
-    expect(money("-5000.50", "")).toBe("−5 000,50");
+    expect(sp(money("283333.33"))).toBe("283 333,33 so'm");
+    expect(sp(money("-5000.50", ""))).toBe("−5 000,50");
+  });
+  it("never breaks an amount across lines", () => {
+    expect(money("1250000")).not.toMatch(/ /);
   });
   it("shows a dash for missing values", () => {
     expect(money(null)).toBe("—");

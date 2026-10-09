@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/Button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
+import { DateTimeInput } from "@/components/ui/dates";
 import { fieldMessage, parseApiError, patch, post, toFormData } from "@/lib/api";
 import { addDays, fromLocalInput, toLocalInput, today } from "@/lib/format";
 import { useInvalidate, useOptions } from "@/lib/hooks";
@@ -127,7 +128,7 @@ export function AssignmentForm({
           {(p) => <Textarea {...p} rows={2} value={form.grading_criteria} onChange={(e) => set("grading_criteria", e.target.value)} />}
         </Field>
         <Field label="Muddat" error={errors.due_at} required>
-          {(p) => <Input {...p} type="datetime-local" value={form.due_at} onChange={(e) => set("due_at", e.target.value)} />}
+          {(p) => <DateTimeInput {...p} value={form.due_at} onChange={(v) => set("due_at", v)} />}
         </Field>
         <Field label="Maksimal ball" error={errors.max_score} required>
           {(p) => <Input {...p} type="number" min={1} max={1000} value={form.max_score} onChange={(e) => set("max_score", e.target.value)} />}
