@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import F, Q
 
-from core.models import TimeStampedModel
+from core.models import TimeStampedModel, plain_number
 
 
 class Grade(TimeStampedModel):
@@ -37,7 +37,8 @@ class Grade(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"{self.student_id}: {self.score}/{self.max_score}"
+        score = f"{plain_number(self.score)}/{plain_number(self.max_score)}"
+        return f"{self.student.full_name}: {score} — {self.assignment.title}"
 
     @property
     def percent(self):

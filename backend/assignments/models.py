@@ -87,7 +87,7 @@ class AssignmentSubmission(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"{self.assignment_id}/{self.student_id}: {self.status}"
+        return f"{self.student.full_name} — {self.assignment.title}"
 
 
 class SubmissionRevision(models.Model):

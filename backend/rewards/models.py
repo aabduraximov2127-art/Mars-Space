@@ -36,4 +36,4 @@ class RewardTransaction(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"{self.student_id}: {self.amount:+d}"
+        return f"{self.student.full_name}: {self.amount:+d} coin"

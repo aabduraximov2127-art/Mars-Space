@@ -34,10 +34,15 @@ class AuditLogSerializer(serializers.ModelSerializer):
 class AuditFilter(filters.FilterSet):
     date_from = filters.DateFilter(field_name="created_at", lookup_expr="date__gte")
     date_to = filters.DateFilter(field_name="created_at", lookup_expr="date__lte")
+    hide_auth = filters.BooleanFilter(method="filter_hide_auth", label="Kirish/chiqishlarni yashirish")
 
     class Meta:
         model = AuditLog
         fields = ("actor", "action", "entity_type", "branch")
+
+    def filter_hide_auth(self, queryset, name, value):
+        # Successful logins/logouts are routine noise; failed logins stay visible (security-relevant).
+        return queryset.exclude(action__in=("login", "logout")) if value else queryset
 
 
 class AuditLogViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

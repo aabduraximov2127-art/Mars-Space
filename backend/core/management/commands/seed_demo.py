@@ -436,15 +436,15 @@ class Command(BaseCommand):
                 )
             month = (month + dt.timedelta(days=32)).replace(day=1)
         for i, m in enumerate(memberships):
-            charged = sum(inv.amount for inv in m.invoices.all())
+            # Most students pay each month's invoice in the first days of that month; some pay half or nothing.
             ratio = [1, 1, 1, 1, Decimal("0.5"), 0, 1][i % 7]
-            to_pay = (charged * Decimal(ratio)).quantize(Decimal("1"))
-            installments = max(1, m.invoices.count())
-            for k in range(installments):
-                amount = (to_pay / installments).quantize(Decimal("1"))
+            for inv in m.invoices.order_by("period"):
+                amount = (inv.amount * Decimal(ratio)).quantize(Decimal("1"))
                 if amount <= 0:
                     continue
-                paid_day = min(self.today, m.joined_at + dt.timedelta(days=30 * k + rng.randint(1, 9)))
+                earliest = max(inv.period, m.joined_at)
+                latest = min(self.today, earliest + dt.timedelta(days=9))
+                paid_day = earliest + dt.timedelta(days=rng.randint(0, max(0, (latest - earliest).days)))
                 Payment.objects.create(
                     membership=m,
                     student=m.student,

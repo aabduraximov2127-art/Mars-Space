@@ -36,7 +36,7 @@ class AttendanceRecord(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"{self.lesson_id}/{self.student_id}: {self.status}"
+        return f"{self.student.full_name}: {self.get_status_display()} ({self.lesson})"
 
 
 class AttendanceChange(models.Model):

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import F, Q
 
-from core.models import TimeStampedModel
+from core.models import TimeStampedModel, plain_number
 
 
 class InvoiceStatus(models.TextChoices):
@@ -58,7 +58,7 @@ class Invoice(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"Invoice {self.id} {self.period:%Y-%m} {self.amount}"
+        return f"Hisob {self.period:%m.%Y} — {self.student.full_name}, {plain_number(self.amount)} so'm"
 
 
 class PaymentMethod(models.TextChoices):
@@ -114,7 +114,7 @@ class Payment(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"Payment {self.receipt_number} {self.amount}"
+        return f"Chek №{self.receipt_number} — {self.student.full_name}, {plain_number(self.amount)} so'm"
 
     @property
     def receipt_number(self) -> str:

@@ -2,7 +2,7 @@ import { ScrollText } from "lucide-react";
 import { useState } from "react";
 
 import { Badge, Card, DescriptionList, EmptyState, PageHeader } from "@/components/ui/display";
-import { SearchInput, Select } from "@/components/ui/form";
+import { Checkbox, SearchInput, Select } from "@/components/ui/form";
 import { Modal } from "@/components/ui/Modal";
 import { DataTable, FilterBar, Pagination } from "@/components/ui/Table";
 import { DateInput } from "@/components/ui/dates";
@@ -12,7 +12,7 @@ import { AUDIT_ACTION, ROLE, label, tone } from "@/lib/labels";
 import type { AuditEntry, Branch } from "@/lib/types";
 
 export default function AuditPage() {
-  const list = usePagedList<AuditEntry>("audit", "/audit-logs/", {}, 30);
+  const list = usePagedList<AuditEntry>("audit", "/audit-logs/", { hide_auth: true }, 30);
   const branches = useOptions<Branch>(["branches"], "/branches/", {});
   const [selected, setSelected] = useState<AuditEntry | null>(null);
   return (
@@ -39,6 +39,11 @@ export default function AuditPage() {
           </Select>
           <DateInput className="sm:w-40" aria-label="Dan" value={String(list.filters.date_from ?? "")} onChange={(v) => list.setFilter("date_from", v)} />
           <DateInput className="sm:w-40" aria-label="Gacha" value={String(list.filters.date_to ?? "")} onChange={(v) => list.setFilter("date_to", v)} />
+          <Checkbox
+            label="Kirish/chiqishlarni yashirish"
+            checked={Boolean(list.filters.hide_auth)}
+            onChange={(e) => list.setFilter("hide_auth", e.target.checked || undefined)}
+          />
         </FilterBar>
         <DataTable
           rows={list.rows}

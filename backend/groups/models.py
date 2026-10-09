@@ -140,7 +140,7 @@ class GroupMembership(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"{self.student_id} @ {self.group_id} ({self.status})"
+        return f"{self.student.full_name} — {self.group.code}"
 
     @property
     def is_open(self) -> bool:

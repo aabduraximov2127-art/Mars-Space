@@ -54,4 +54,4 @@ class Lesson(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return f"{self.group_id} {self.date} {self.start_time:%H:%M}"
+        return f"{self.group.code} · {self.date:%d.%m.%Y} {self.start_time:%H:%M}"

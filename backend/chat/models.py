@@ -78,4 +78,4 @@ class ChatMessage(models.Model):
         indexes = [models.Index(fields=["room", "id"], name="chat_message_room_idx")]
 
     def __str__(self) -> str:
-        return f"{self.room_id}#{self.pk}"
+        return f"Xabar #{self.pk} ({self.room})"
