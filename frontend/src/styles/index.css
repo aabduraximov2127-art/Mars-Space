@@ -1,0 +1,107 @@
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+
+/* Design tokens — single source of truth (docs/DESIGN.md §1). */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-brand-50: #f3f2ff;
+  --color-brand-100: #e8e5ff;
+  --color-brand-200: #d2ccfe;
+  --color-brand-300: #b1a5fc;
+  --color-brand-400: #8d7af8;
+  --color-brand-500: #6f57f1;
+  --color-brand-600: #5b3fe4;
+  --color-brand-700: #4c31c8;
+  --color-brand-800: #3f2aa2;
+  --color-brand-900: #352780;
+  --color-brand-950: #1f174d;
+
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e2e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #94a3b8;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
+
+  --color-canvas: #f5f6fa;
+  --color-surface: #ffffff;
+  --color-line: #e6e8ef;
+
+  --color-success: #059669;
+  --color-success-soft: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-soft: #fffbeb;
+  --color-danger: #e11d48;
+  --color-danger-soft: #fff1f2;
+  --color-info: #0284c7;
+  --color-info-soft: #f0f9ff;
+  --color-coin: #f59e0b;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05);
+  --shadow-pop: 0 12px 32px -8px rgb(16 24 40 / 0.18);
+
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-slide-in: slide-in 200ms ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-canvas text-ink-700 font-sans text-sm leading-normal;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-ink-900;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
