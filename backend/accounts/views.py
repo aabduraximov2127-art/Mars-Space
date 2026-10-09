@@ -16,10 +16,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from audit.services import record as audit
 from core.exceptions import BusinessRuleError
-from core.permissions import AD, ALL_ROLES, SA, TE, RolePermission, role_of
+from core.permissions import AD, ALL_ROLES, SA, ST, TE, RolePermission, require, role_of
 from core.throttles import LoginRateThrottle, PasswordResetRateThrottle
 
-from . import services
+from . import overview, services
 from .backends import find_user_by_login
 from .models import User
 from .selectors import users_for
@@ -272,6 +272,8 @@ class UserViewSet(
         "unblock": (SA, AD),
         "set_password": (SA, AD),
         "change_role": (SA,),
+        "study_history": (SA, AD, TE),
+        "teaching_overview": (SA, AD, TE),
     }
     http_method_names = ["get", "post", "patch", "head"]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
@@ -365,6 +367,27 @@ class UserViewSet(
         )
         user.refresh_from_db()
         return Response(UserSerializer(user, context=self.get_serializer_context()).data)
+
+    @extend_schema(responses={200: OpenApiResponse(description="Memberships with attendance, grades, balance")})
+    @action(detail=True, methods=["get"], url_path="study-history")
+    def study_history(self, request, pk=None):
+        user = self.get_object()
+        if user.role != ST:
+            raise BusinessRuleError("O'quv tarixi faqat student uchun mavjud.", code="not_student")
+        return Response(overview.study_history(user, request.user))
+
+    @extend_schema(responses={200: OpenApiResponse(description="Groups, upcoming lessons, weekly load")})
+    @action(detail=True, methods=["get"], url_path="teaching-overview")
+    def teaching_overview(self, request, pk=None):
+        if role_of(request.user) == TE:
+            # Teachers are not in their own users_for() scope; they may only look at themselves.
+            require(str(request.user.pk) == str(pk), "Faqat o'z ma'lumotlaringizni ko'ra olasiz.")
+            user = request.user
+        else:
+            user = self.get_object()
+        if user.role != TE:
+            raise BusinessRuleError("Ish yuklamasi faqat ustoz uchun mavjud.", code="not_teacher")
+        return Response(overview.teaching_overview(user))
 
 
 @extend_schema(responses={200: OpenApiResponse(description="Permission matrix")}, tags=["auth"])

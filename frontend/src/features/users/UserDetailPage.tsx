@@ -21,13 +21,53 @@ import { ConfirmDialog } from "@/components/ui/Modal";
 import { DataTable } from "@/components/ui/Table";
 import { get, post } from "@/lib/api";
 import { isStaff, useMe } from "@/lib/auth";
-import { date, daysOfWeek, money, percent, phone, time } from "@/lib/format";
-import { useAction, useOptions } from "@/lib/hooks";
+import { date, daysOfWeek, money, percent, phone, time, weekdayLabel } from "@/lib/format";
+import { useAction } from "@/lib/hooks";
 import { GROUP_STATUS, MEMBERSHIP_STATUS, ROLE, label, tone } from "@/lib/labels";
-import type { AttendanceSummary, Balance, Group, Membership, User } from "@/lib/types";
+import type { AttendanceSummary, GroupStatus, MembershipStatus, User } from "@/lib/types";
 import { EnrollModal } from "@/features/groups/EnrollModal";
 
 import { TemporaryPasswordModal, UserForm } from "./UserForm";
+
+interface StudyRow {
+  membership: number;
+  group: number;
+  group_name: string;
+  group_code: string;
+  course_name: string;
+  teacher_name: string | null;
+  status: MembershipStatus;
+  joined_at: string;
+  left_at: string | null;
+  attendance: AttendanceSummary;
+  grades: { graded_count: number; average_percent: number | null };
+  balance?: { charged: string; paid: string; balance: string; debt: string } | null;
+}
+
+interface TeachingOverview {
+  groups: {
+    id: number;
+    name: string;
+    code: string;
+    course_name: string;
+    status: GroupStatus;
+    students_count: number;
+    days_of_week: number[];
+    lesson_start_time: string | null;
+    lesson_end_time: string | null;
+    room_name: string | null;
+  }[];
+  upcoming_lessons: {
+    id: number;
+    group: number;
+    group_name: string;
+    date: string;
+    start_time: string;
+    end_time: string;
+    room_name: string | null;
+  }[];
+  weekly_load: { lessons: number; hours: number; active_groups: number; students: number };
+}
 
 export default function UserDetailPage() {
   const { id } = useParams();
@@ -39,8 +79,11 @@ export default function UserDetailPage() {
   const isStudent = user?.role === "student";
   const isTeacher = user?.role === "teacher";
 
-  const memberships = useOptions<Membership>(["memberships", "user", id], "/memberships/", { student: id }, Boolean(isStudent));
-  const balances = useOptions<Balance>(["balances", "user", id], "/balances/", { student: id }, Boolean(isStudent && staff));
+  const history = useQuery({
+    queryKey: ["study-history", id],
+    queryFn: () => get<{ memberships: StudyRow[] }>(`/users/${id}/study-history/`),
+    enabled: Boolean(isStudent),
+  });
   const attendance = useQuery({
     queryKey: ["attendance-summary", id],
     queryFn: () => get<AttendanceSummary>("/attendance/summary/", { student: id }),
@@ -56,7 +99,11 @@ export default function UserDetailPage() {
     queryFn: () => get<{ balance: number }>("/rewards/balance/", { student: id }),
     enabled: Boolean(isStudent),
   });
-  const teacherGroups = useOptions<Group>(["groups", "teacher", id], "/groups/", { teacher: id }, Boolean(isTeacher));
+  const overview = useQuery({
+    queryKey: ["teaching-overview", id],
+    queryFn: () => get<TeachingOverview>(`/users/${id}/teaching-overview/`),
+    enabled: Boolean(isTeacher),
+  });
 
   const [editing, setEditing] = useState(false);
   const [blocking, setBlocking] = useState(false);
@@ -86,7 +133,7 @@ export default function UserDetailPage() {
   if (q.error) return <ErrorState error={q.error} onRetry={() => q.refetch()} />;
   if (!user) return <Spinner />;
 
-  const totalDebt = (balances.data ?? []).reduce((s, b) => s + Number(b.debt), 0);
+  const totalDebt = (history.data?.memberships ?? []).reduce((sum, m) => sum + Number(m.balance?.debt ?? 0), 0);
   const back = user.role === "student" ? "/students" : user.role === "teacher" ? "/teachers" : "/admins";
 
   return (
@@ -155,7 +202,20 @@ export default function UserDetailPage() {
           <StatCard label="Davomat" value={percent(attendance.data?.rate)} tone={rateTone(attendance.data?.rate)} loading={attendance.isLoading} hint={attendance.data && `${attendance.data.marked} ta belgilangan dars`} />
           <StatCard label="O'rtacha baho" value={percent(grades.data?.average_percent)} tone="success" loading={grades.isLoading} hint={grades.data && `${grades.data.graded_count} ta baho`} />
           <StatCard label="Coinlar" value={coins.data?.balance ?? "—"} tone="warning" loading={coins.isLoading} />
-          {staff && <StatCard label="Qarzdorlik" value={money(totalDebt)} tone={totalDebt > 0 ? "danger" : "success"} loading={balances.isLoading} />}
+          {staff && <StatCard label="Qarzdorlik" value={money(totalDebt)} tone={totalDebt > 0 ? "danger" : "success"} loading={history.isLoading} />}
+        </div>
+      )}
+      {isTeacher && (
+        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard label="Shu haftadagi darslar" value={overview.data?.weekly_load.lessons ?? "—"} loading={overview.isLoading} />
+          <StatCard
+            label="Haftalik yuklama"
+            value={overview.data ? `${overview.data.weekly_load.hours} soat` : "—"}
+            tone="info"
+            loading={overview.isLoading}
+          />
+          <StatCard label="Faol guruhlar" value={overview.data?.weekly_load.active_groups ?? "—"} tone="success" loading={overview.isLoading} />
+          <StatCard label="Studentlar" value={overview.data?.weekly_load.students ?? "—"} tone="warning" loading={overview.isLoading} />
         </div>
       )}
 
@@ -190,12 +250,13 @@ export default function UserDetailPage() {
         <div className="space-y-6">
           {isStudent && (
             <Card>
-              <CardHeader title="Guruhlar tarixi" />
+              <CardHeader title="O'quv tarixi" description="Har bir guruh bo'yicha davomat, baholar va to'lov holati" />
               <DataTable
-                rows={memberships.data}
-                loading={memberships.isLoading}
-                error={memberships.error}
-                rowKey={(r) => r.id}
+                rows={history.data?.memberships}
+                loading={history.isLoading}
+                error={history.error}
+                onRetry={() => history.refetch()}
+                rowKey={(r) => r.membership}
                 onRowClick={(r) => navigate(`/groups/${r.group}`)}
                 empty={<EmptyState title="Guruhga a'zo emas" />}
                 columns={[
@@ -205,58 +266,109 @@ export default function UserDetailPage() {
                     cell: (r) => (
                       <div>
                         <p className="font-medium text-ink-900">{r.group_name}</p>
-                        <p className="text-[13px] text-ink-500">{r.course_name}</p>
+                        <p className="text-[13px] text-ink-500">
+                          {r.course_name} · {date(r.joined_at)} — {r.left_at ? date(r.left_at) : "hozir"}
+                        </p>
                       </div>
                     ),
                   },
-                  { key: "period", header: "Davr", cell: (r) => `${date(r.joined_at)} — ${r.left_at ? date(r.left_at) : "hozir"}` },
-                  { key: "fee", header: "Oylik", cell: (r) => money(r.monthly_amount), className: "tabular" },
-                  { key: "status", header: "Holat", cell: (r) => <Badge tone={tone(MEMBERSHIP_STATUS, r.status)}>{label(MEMBERSHIP_STATUS, r.status)}</Badge> },
-                ]}
-              />
-            </Card>
-          )}
-          {isStudent && staff && (
-            <Card>
-              <CardHeader title="Balans" description="Har bir guruh bo'yicha hisoblangan va to'langan summa" />
-              <DataTable
-                rows={balances.data}
-                loading={balances.isLoading}
-                error={balances.error}
-                rowKey={(r) => r.id}
-                columns={[
-                  { key: "group", header: "Guruh", cell: (r) => r.group_name },
-                  { key: "charged", header: "Hisoblangan", cell: (r) => money(r.charged), className: "tabular" },
-                  { key: "paid", header: "To'langan", cell: (r) => money(r.paid), className: "tabular" },
                   {
-                    key: "debt",
-                    header: "Qarz",
-                    cell: (r) => <span className={Number(r.debt) > 0 ? "font-medium text-danger" : "text-success"}>{money(r.debt)}</span>,
-                    className: "tabular",
+                    key: "att",
+                    header: "Davomat",
+                    cell: (r) => (
+                      <Badge tone={rateTone(r.attendance.rate)} dot={false}>
+                        {percent(r.attendance.rate)}
+                      </Badge>
+                    ),
+                  },
+                  {
+                    key: "grade",
+                    header: "Baho",
+                    cell: (r) => (
+                      <span className="tabular">
+                        {percent(r.grades.average_percent)} <span className="text-xs text-ink-400">({r.grades.graded_count})</span>
+                      </span>
+                    ),
+                  },
+                  ...(staff
+                    ? [
+                        {
+                          key: "debt",
+                          header: "Qarz",
+                          cell: (r: StudyRow) =>
+                            r.balance ? (
+                              <span className={Number(r.balance.debt) > 0 ? "tabular font-medium text-danger" : "tabular text-success"}>
+                                {money(r.balance.debt)}
+                              </span>
+                            ) : (
+                              "—"
+                            ),
+                        },
+                      ]
+                    : []),
+                  {
+                    key: "status",
+                    header: "Holat",
+                    cell: (r) => <Badge tone={tone(MEMBERSHIP_STATUS, r.status)}>{label(MEMBERSHIP_STATUS, r.status)}</Badge>,
                   },
                 ]}
               />
             </Card>
           )}
           {isTeacher && (
-            <Card>
-              <CardHeader title="Guruhlari" />
-              <DataTable
-                rows={teacherGroups.data}
-                loading={teacherGroups.isLoading}
-                error={teacherGroups.error}
-                rowKey={(r) => r.id}
-                onRowClick={(r) => navigate(`/groups/${r.id}`)}
-                empty={<EmptyState title="Guruh biriktirilmagan" />}
-                columns={[
-                  { key: "name", header: "Guruh", cell: (r) => <span className="font-medium text-ink-900">{r.name}</span> },
-                  { key: "course", header: "Kurs", cell: (r) => r.course_name },
-                  { key: "time", header: "Vaqt", cell: (r) => `${daysOfWeek(r.days_of_week)} ${time(r.lesson_start_time)}` },
-                  { key: "students", header: "Studentlar", cell: (r) => r.students_count, className: "tabular" },
-                  { key: "status", header: "Holat", cell: (r) => <Badge tone={tone(GROUP_STATUS, r.status)}>{label(GROUP_STATUS, r.status)}</Badge> },
-                ]}
-              />
-            </Card>
+            <>
+              <Card>
+                <CardHeader title="Guruhlari" />
+                <DataTable
+                  rows={overview.data?.groups}
+                  loading={overview.isLoading}
+                  error={overview.error}
+                  onRetry={() => overview.refetch()}
+                  rowKey={(r) => r.id}
+                  onRowClick={(r) => navigate(`/groups/${r.id}`)}
+                  empty={<EmptyState title="Guruh biriktirilmagan" />}
+                  columns={[
+                    {
+                      key: "name",
+                      header: "Guruh",
+                      cell: (r) => (
+                        <div>
+                          <p className="font-medium text-ink-900">{r.name}</p>
+                          <p className="text-[13px] text-ink-500">{r.course_name}</p>
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "time",
+                      header: "Vaqt",
+                      cell: (r) => `${daysOfWeek(r.days_of_week)} ${time(r.lesson_start_time)}–${time(r.lesson_end_time)}`,
+                    },
+                    { key: "room", header: "Xona", cell: (r) => r.room_name ?? "—" },
+                    { key: "students", header: "Studentlar", cell: (r) => r.students_count, className: "tabular" },
+                    {
+                      key: "status",
+                      header: "Holat",
+                      cell: (r) => <Badge tone={tone(GROUP_STATUS, r.status)}>{label(GROUP_STATUS, r.status)}</Badge>,
+                    },
+                  ]}
+                />
+              </Card>
+              <Card>
+                <CardHeader title="Yaqin 7 kundagi darslar" />
+                <DataTable
+                  rows={overview.data?.upcoming_lessons}
+                  loading={overview.isLoading}
+                  rowKey={(r) => r.id}
+                  empty={<EmptyState title="Yaqin darslar yo'q" />}
+                  columns={[
+                    { key: "d", header: "Kun", cell: (r) => `${weekdayLabel(r.date)}, ${date(r.date)}` },
+                    { key: "t", header: "Vaqt", cell: (r) => `${time(r.start_time)}–${time(r.end_time)}` },
+                    { key: "g", header: "Guruh", cell: (r) => r.group_name },
+                    { key: "r", header: "Xona", cell: (r) => r.room_name ?? "—" },
+                  ]}
+                />
+              </Card>
+            </>
           )}
         </div>
       </div>
