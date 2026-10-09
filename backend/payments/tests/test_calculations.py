@@ -81,6 +81,11 @@ def test_fifo_allocation_states(group, student):
 def test_membership_monthly_amount_rounding(group, student):
     m = enroll(student, group, monthly_fee=D("333333.33"), discount_type="percent", discount_value=D("15"))
     assert m.monthly_amount == D("283333.33")  # 333333.33 - 49999.9995 -> 50000.00 discount
-    fixed = enroll(make_user(Role.STUDENT, branch=group.branch), group, monthly_fee=D("100"), discount_type="fixed",
-                   discount_value=D("100"))
+    fixed = enroll(
+        make_user(Role.STUDENT, branch=group.branch),
+        group,
+        monthly_fee=D("100"),
+        discount_type="fixed",
+        discount_value=D("100"),
+    )
     assert fixed.monthly_amount == D("0.00")

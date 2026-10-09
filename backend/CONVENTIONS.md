@@ -20,12 +20,14 @@ Design contract: `../docs/DATABASE_SCHEMA.md`, `../docs/API_SPECIFICATION.md`, `
 ```python
 from core.permissions import AD, ALL_ROLES, SA, ST, TE, RolePermission
 
+
 class ThingViewSet(viewsets.ModelViewSet):
     permission_classes = [RolePermission]
     role_permissions = {"list": ALL_ROLES, "retrieve": ALL_ROLES, "create": (SA, AD), "my_action": (TE,)}
-    http_method_names = ["get", "post", "patch", "head"]   # drop "put"/"delete" unless needed
+    http_method_names = ["get", "post", "patch", "head"]  # drop "put"/"delete" unless needed
+
     def get_queryset(self):
-        return things_for(self.request.user)                  # scope → foreign rows give 404
+        return things_for(self.request.user)  # scope → foreign rows give 404
 ```
 * Every action (incl. `@action`s) must appear in `role_permissions`; `accounts/tests/test_permission_audit.py`
   fails otherwise. APIViews use lowercase HTTP methods as keys (`{"get": ..., "post": ...}`).

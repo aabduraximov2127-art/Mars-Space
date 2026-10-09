@@ -52,9 +52,7 @@ def can_manage_group(user, group: Group) -> bool:
 
 
 def is_active_member(student, group: Group) -> bool:
-    return GroupMembership.objects.filter(
-        group=group, student=student, status=MembershipStatus.ACTIVE
-    ).exists()
+    return GroupMembership.objects.filter(group=group, student=student, status=MembershipStatus.ACTIVE).exists()
 
 
 def open_memberships(group: Group) -> QuerySet[GroupMembership]:
