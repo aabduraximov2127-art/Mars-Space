@@ -216,6 +216,19 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": r"/api/",
+    # Stable enum component names (several models have a field called "status").
+    "ENUM_NAME_OVERRIDES": {
+        "RoleEnum": "core.roles.Role",
+        "AttendanceStatusEnum": "attendance.models.AttendanceStatus",
+        "GroupStatusEnum": "groups.models.GroupStatus",
+        "MembershipStatusEnum": "groups.models.MembershipStatus",
+        "LessonStatusEnum": "schedules.models.LessonStatus",
+        "AssignmentStatusEnum": "assignments.models.AssignmentStatus",
+        "SubmissionStatusEnum": "assignments.models.SubmissionStatus",
+        "InvoiceStatusEnum": "payments.models.InvoiceStatus",
+        "PaymentStatusEnum": "payments.models.PaymentStatus",
+        "AnnouncementStatusEnum": "announcements.models.AnnouncementStatus",
+    },
     "SERVE_PERMISSIONS": (
         ["rest_framework.permissions.AllowAny"]
         if env.bool("API_DOCS_PUBLIC", default=DEBUG)
