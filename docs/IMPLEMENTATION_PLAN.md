@@ -35,15 +35,16 @@ O'zgargan fayllarni ko'rib chiqish → `ruff check` + `tsc --noEmit` + `eslint` 
 ushbu jadvalni yangilash → qolgan muammolarni "Ma'lum muammolar" bo'limiga yozish.
 
 ## Ma'lum muammolar / qoldiqlar
-Holat 2026-10-09: backend 92 ta test (12 ssenariy + permission audit) yashil, `ruff`, `spectacular --validate`,
-`tsc`, `eslint`, `vite build` toza. Asosiy oqimlar (davomat, topshirish, baholash, to'lov, yozilish, chat) headless
-Chrome'da qo'lda yozilgan Playwright skripti bilan sinaldi — skript hali repoga test sifatida qo'shilmagan.
+Holat 2026-10-09: backend 95 ta test (12 ssenariy + permission audit), frontend 16 ta Vitest unit testi va
+11 ta Playwright brauzer testi (4 rol bo'yicha smoke + vazifa, davomat, to'lov, yozilish, chat oqimlari) yashil.
+`ruff`, `spectacular --validate --fail-on-warn`, `tsc`, `eslint`, `vite build` toza. GitHub Actions CI
+(`.github/workflows/ci.yml`) backend va frontend tekshiruvlarini har push'da ishga tushiradi.
 
 * Docker Compose stack shu kompyuterda sinalmagan (Docker o'rnatilmagan) — Phase 8 🟡.
-* `GET /api/users/{id}/study-history/` va `teaching-overview/` alohida endpoint sifatida yozilmagan; foydalanuvchi
-  sahifasi bu ma'lumotlarni mavjud endpointlardan (memberships, balances, attendance/summary, grades/summary) yig'adi.
-* Chat — REST + 5 s polling; Django Channels keyingi bosqichda.
+* CI workflow GitHub'da birinchi marta ishga tushishi kuzatilmagan (`gh` CLI yo'q); qadamlar lokal muhitda
+  `DEBUG=false` bilan takrorlab tekshirilgan.
+* Chat — REST + 5 s polling; Django Channels keyingi bosqichda (API kontrakti o'zgarmaydi).
 * Frontend yo'llari rol bo'yicha prefikssiz (`/groups`, `/payments`): navigatsiya va ruxsat rolga qarab beriladi,
   bildirishnoma havolalari shu yo'llarga ishora qiladi (ARCHITECTURE §11 dagi `/admin/*` daraxtlari o'rniga).
-* Frontend unit testlari (Vitest) hali yozilmagan; sozlama tayyor (`src/test/setup.ts`).
+* Playwright testlari ishlab turgan dev stack va `seed_demo` ma'lumotlarini talab qiladi (CI'da ishga tushmaydi).
 * Email yuborish SMTP sozlanmaguncha konsolga chiqadi (parolni tiklash xati).

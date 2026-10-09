@@ -53,15 +53,20 @@ Hamma akkauntlar uchun parol: `Demo12345!`
 
 ```powershell
 cd backend
-.venv\Scripts\python -m pytest            # 92 ta test, shu jumladan 12 ta majburiy ssenariy
+.venv\Scripts\python -m pytest            # 95 ta test, shu jumladan 12 ta majburiy ssenariy
 .venv\Scripts\ruff check .
 .venv\Scripts\python manage.py spectacular --validate --fail-on-warn --file NUL
 
 cd ..\frontend
 npm run typecheck
 npm run lint
+npm test                  # Vitest unit testlari
 npm run build
+npm run e2e               # Playwright: backend + frontend ishlab turgan va seed_demo yuklangan bo'lishi kerak
 ```
+
+Har push'da GitHub Actions (`.github/workflows/ci.yml`) backend lint/migratsiya/sxema/testlarini va frontend
+typecheck/lint/unit test/build'ni ishga tushiradi.
 
 ## Production (Docker Compose)
 
