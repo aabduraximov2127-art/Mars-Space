@@ -10,7 +10,8 @@ filiali), **Ustoz** (o'z guruhlari) va **Student** (faqat o'zi).
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS 4, TanStack Query, React Hook Form + Zod, Recharts |
 | Deploy | Docker Compose: PostgreSQL, Redis, gunicorn, Nginx |
 
-Hujjatlar: [`docs/`](docs) — arxitektura, DB sxema, API kontrakti, dizayn tizimi va reja.
+Hujjatlar: [`docs/`](docs) — arxitektura, DB sxema, API kontrakti, dizayn tizimi, reja va
+[yakuniy hisobot](docs/FINAL_REPORT.md).
 
 ## Lokal ishga tushirish (Windows, Docker'siz)
 

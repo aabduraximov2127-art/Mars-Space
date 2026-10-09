@@ -35,7 +35,7 @@ O'zgargan fayllarni ko'rib chiqish → `ruff check` + `tsc --noEmit` + `eslint` 
 ushbu jadvalni yangilash → qolgan muammolarni "Ma'lum muammolar" bo'limiga yozish.
 
 ## Ma'lum muammolar / qoldiqlar
-Holat 2026-10-09: backend 95 ta test (12 ssenariy + permission audit), frontend 16 ta Vitest unit testi va
+Holat 2026-10-09: backend 95 ta test (12 ssenariy + permission audit), frontend 27 ta Vitest testi (unit + komponent) va
 11 ta Playwright brauzer testi (4 rol bo'yicha smoke + vazifa, davomat, to'lov, yozilish, chat oqimlari) yashil.
 `ruff`, `spectacular --validate --fail-on-warn`, `tsc`, `eslint`, `vite build` toza. GitHub Actions CI
 (`.github/workflows/ci.yml`) backend va frontend tekshiruvlarini har push'da ishga tushiradi.
